@@ -9,6 +9,7 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 
 set(EXE_TYPE "")
 if(WIN32)
@@ -19,7 +20,17 @@ elseif(EMSCRIPTEN)
   set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
 endif()
 
-add_executable(entropy ${EXE_TYPE} src/main.cpp)
+add_executable(entropy ${EXE_TYPE})
+
+target_sources(entropy PRIVATE
+  src/main.cpp
+  src/texture/texture.cpp
+)
+
+add_custom_target(copy_assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/assets
+)
+add_dependencies(entropy copy_assets)
 
 # Link to the actual SDL3 library.
-target_link_libraries(entropy PRIVATE SDL3::SDL3)
+target_link_libraries(entropy PRIVATE SDL3_image::SDL3_image SDL3::SDL3)
