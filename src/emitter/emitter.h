@@ -9,11 +9,11 @@
 class Emitter {
 public:
   Emitter();
-  void emitEvent(SDL_EventType type, SDL_Event *event);
-  void registerCallback(SDL_EventType type, void (*callback)(SDL_Event *));
+  void emitEvent(Uint32 type, SDL_Event *event);
+  void registerCallback(Uint32 type, void (*callback)(SDL_Event *));
 
 private:
-  std::map<SDL_EventType, std::vector<void (*)(SDL_Event *)>> eventMap;
+  std::map<Uint32, std::vector<void (*)(SDL_Event *)>> eventMap;
 };
 
 #endif

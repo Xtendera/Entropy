@@ -6,7 +6,18 @@ Engine::Engine()
 }
 
 Engine::~Engine() {
-  
+}
+
+void Engine::shutdown() {
+  if (textureManager) {
+    delete textureManager;
+    textureManager = nullptr;
+  }
+  if (emitter) {
+    delete emitter;
+    emitter = nullptr;
+  }
+  // Note: window and renderer are cleaned up by SDL automatically
 }
 
 bool Engine::initialize(int windowWidth, int windowHeight) {
@@ -24,6 +35,8 @@ bool Engine::initialize(int windowWidth, int windowHeight) {
   SDL_SetRenderLogicalPresentation(renderer, windowWidth, windowHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX);
   
   textureManager = new TextureManager(renderer);
+
+  emitter = new Emitter();
 
   return true;
 }

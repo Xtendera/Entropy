@@ -25,8 +25,10 @@ bool Texture::loadFromFile(std::string path) {
 }
 
 void Texture::destroy() {
-  SDL_DestroyTexture(texture);
-  texture = nullptr;
+  if (texture) {
+    SDL_DestroyTexture(texture);
+    texture = nullptr;
+  }
   width = 0;
   height = 0;
 }

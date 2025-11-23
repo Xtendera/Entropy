@@ -1,4 +1,5 @@
 #include "SDL3/SDL_init.h"
+#include "SDL3/SDL_log.h"
 #define SDL_MAIN_USE_CALLBACKS
 #include "SDL3/SDL_events.h"
 #include <SDL3/SDL.h>
@@ -9,6 +10,11 @@ constexpr int WINDOW_WIDTH{640};
 constexpr int WINDOW_HEIGHT{480};
 
 static Engine *engine = nullptr;
+
+// Testing only
+void mouseEvent(SDL_Event *event) {
+  SDL_Log("Event triggered!");
+}
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
@@ -28,6 +34,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
   SDL_free(const_cast<char *>(basePath));
 
+  engine->getEmitter()->registerCallback(SDL_EVENT_MOUSE_WHEEL, mouseEvent);
+
   return SDL_APP_CONTINUE;
 }
 
@@ -36,6 +44,10 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
   if (event->type == SDL_EVENT_QUIT) {
     return SDL_APP_SUCCESS; /* end the program, reporting success to the OS. */
   }
+  
+  // Event Emitter
+  engine->getEmitter()->emitEvent(event->type, event);
+
   return SDL_APP_CONTINUE; /* carry on with the program! */
 }
 
@@ -61,8 +73,10 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
-  // Destroy testManager
-  delete engine;
-  engine = nullptr;
-  /* SDL will clean up the window/renderer for us. */
+  // Clean up engine before SDL destroys renderer
+  if (engine) {
+    engine->shutdown();
+    delete engine;
+    engine = nullptr;
+  }
 }
