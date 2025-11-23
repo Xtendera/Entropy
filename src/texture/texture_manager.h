@@ -1,3 +1,7 @@
+#ifndef TEXTURE_MANAGER_H
+#define TEXTURE_MANAGER_H
+#pragma once
+
 #include "SDL3/SDL_render.h"
 #include "texture.h"
 #include <map>
@@ -13,3 +17,4 @@ private:
   SDL_Renderer *renderer;
   std::map<std::string, Texture*> texMap;
 };
+#endif

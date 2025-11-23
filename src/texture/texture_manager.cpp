@@ -12,8 +12,8 @@ TextureManager::~TextureManager() {
 }
 
 bool TextureManager::loadTexture(std::string key, std::string filePath) {
-  Texture *tex = new Texture();
-  if (!tex->loadFromFile(renderer, filePath)) {
+  Texture *tex = new Texture(renderer);
+  if (!tex->loadFromFile(filePath)) {
     delete tex;
     return false;
   }
