@@ -25,6 +25,7 @@ add_executable(entropy ${EXE_TYPE})
 target_sources(entropy PRIVATE
   src/main.cpp
   src/texture/texture.cpp
+  src/texture/texture_manager.cpp
 )
 
 add_custom_target(copy_assets

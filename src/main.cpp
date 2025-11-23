@@ -2,7 +2,7 @@
 #define SDL_MAIN_USE_CALLBACKS
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_video.h"
-#include "texture/texture.h"
+#include "texture/texture_manager.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
@@ -12,7 +12,7 @@ constexpr int WINDOW_HEIGHT{480};
 static SDL_Window *window = NULL;
 static SDL_Renderer *renderer = NULL;
 
-static Texture *test = new Texture();
+static TextureManager *testManager = nullptr;
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
@@ -30,13 +30,15 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   SDL_SetRenderLogicalPresentation(renderer, 640, 480,
                                    SDL_LOGICAL_PRESENTATION_LETTERBOX);
 
+  testManager = new TextureManager(renderer);
+
   const char *basePath = SDL_GetBasePath();
   // Initialize textures
-  if(!test->loadFromFile(renderer, std::string(basePath) + "assets/test.png")) {
+  if (!testManager->loadTexture("test", std::string(basePath) + "assets/test.png")) {
     return SDL_APP_FAILURE;
   }
 
-  SDL_free(const_cast<char*>(basePath));
+  SDL_free(const_cast<char *>(basePath));
 
   return SDL_APP_CONTINUE;
 }
@@ -62,7 +64,7 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
   SDL_RenderClear(renderer);
 
   // Render texture
-  test->render(renderer, 100.0f, 200.0f);
+  testManager->getTexture("test")->render(renderer, 0.0f, 0.0f);
 
   /* put the newly-cleared rendering on the screen. */
   SDL_RenderPresent(renderer);
