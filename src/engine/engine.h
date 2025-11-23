@@ -26,5 +26,7 @@ private:
   // create their own.
   TextureManager *textureManager;
   Emitter *emitter;
+  // Global font
+  TTF_Font *gFont{nullptr};
 };
 #endif

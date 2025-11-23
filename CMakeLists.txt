@@ -10,6 +10,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
+add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
 
 set(EXE_TYPE "")
 if(WIN32)
@@ -25,6 +26,7 @@ add_executable(entropy ${EXE_TYPE})
 target_sources(entropy PRIVATE
   src/main.cpp
   src/texture/texture.cpp
+  src/texture/sprite_sheet.cpp
   src/texture/texture_manager.cpp
   src/engine/engine.cpp
   src/emitter/emitter.cpp
@@ -36,4 +38,4 @@ add_custom_target(copy_assets
 add_dependencies(entropy copy_assets)
 
 # Link to the actual SDL3 library.
-target_link_libraries(entropy PRIVATE SDL3_image::SDL3_image SDL3::SDL3)
+target_link_libraries(entropy PRIVATE SDL3_image::SDL3_image SDL3::SDL3 SDL3_ttf::SDL3_ttf)
