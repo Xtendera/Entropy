@@ -1,87 +1,62 @@
+#define SDL_MAIN_USE_CALLBACKS
 #include "SDL3/SDL_events.h"
 #include "SDL3/SDL_video.h"
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-constexpr int kScreenWidth{640};
-constexpr int kScreenHeight{480};
+constexpr int WINDOW_WIDTH{640};
+constexpr int WINDOW_HEIGHT{480};
 
-// The window we'll be rendering to
-SDL_Window *gWindow{nullptr};
+static SDL_Window *window = NULL;
+static SDL_Renderer *renderer = NULL;
 
-// The surface contained by the window
-SDL_Surface *gScreenSurface{nullptr};
+/* This function runs once at startup. */
+SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[])
+{
+    SDL_SetAppMetadata("Entropy", "0.1", "dev.ashrayshah.entropy-engine");
 
-// The image we will load and show on the screen
-SDL_Surface *gHelloWorld{nullptr};
-
-bool init() {
-  // Initialization flag
-  bool success{true};
-
-  // Initialize SDL
-  if (!SDL_Init(SDL_INIT_VIDEO)) {
-    SDL_Log("SDL could not initialize! SDL error: %s\n", SDL_GetError());
-    success = false;
-  } else {
-    // Create window
-    if (gWindow = SDL_CreateWindow("SDL3 Tutorial: Hello SDL3", kScreenWidth,
-                                   kScreenHeight, 0);
-        gWindow == nullptr) {
-      SDL_Log("Window could not be created! SDL error: %s\n", SDL_GetError());
-      success = false;
-    } else {
-      // Get window surface
-      gScreenSurface = SDL_GetWindowSurface(gWindow);
+    if (!SDL_Init(SDL_INIT_VIDEO)) {
+        SDL_Log("Couldn't initialize SDL: %s", SDL_GetError());
+        return SDL_APP_FAILURE;
     }
-  }
 
-  return success;
+    if (!SDL_CreateWindowAndRenderer("Entropy", WINDOW_WIDTH, WINDOW_HEIGHT, SDL_WINDOW_RESIZABLE, &window, &renderer)) {
+        SDL_Log("Couldn't create window/renderer: %s", SDL_GetError());
+        return SDL_APP_FAILURE;
+    }
+    SDL_SetRenderLogicalPresentation(renderer, 640, 480, SDL_LOGICAL_PRESENTATION_LETTERBOX);
+
+    return SDL_APP_CONTINUE;
 }
 
-void close() {
-  // Clean up surface
-  SDL_DestroySurface(gHelloWorld);
-  gHelloWorld = nullptr;
-
-  // Destroy window
-  SDL_DestroyWindow(gWindow);
-  gWindow = nullptr;
-  gScreenSurface = nullptr;
-
-  // Quit SDL subsystems
-  SDL_Quit();
+// AppEvent handler
+SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event)
+{
+    if (event->type == SDL_EVENT_QUIT) {
+        return SDL_APP_SUCCESS;  /* end the program, reporting success to the OS. */
+    }
+    return SDL_APP_CONTINUE;  /* carry on with the program! */
 }
 
+/* This function runs once per frame, and is the heart of the program. */
+SDL_AppResult SDL_AppIterate(void *appstate)
+{
+    const double now = ((double)SDL_GetTicks()) / 1000.0;
+    const float red = (float) (0.5 + 0.5 * SDL_sin(now));
+    const float green = (float) (0.5 + 0.5 * SDL_sin(now + SDL_PI_D * 2 / 3));
+    const float blue = (float) (0.5 + 0.5 * SDL_sin(now + SDL_PI_D * 4 / 3));
+    SDL_SetRenderDrawColorFloat(renderer, red, green, blue, SDL_ALPHA_OPAQUE_FLOAT);
 
-int SDL_main(int argc, char *argv[]) {
-  (void)argc;
-  (void)argv;
+    /* clear the window to the draw color. */
+    SDL_RenderClear(renderer);
 
-  int exitCode{0};
-  if (!init()) {
-    SDL_Log("Intialization Sequence failed! Exiting...");
-    exitCode = 1;
-  } else {
-    bool quit{false};
+    /* put the newly-cleared rendering on the screen. */
+    SDL_RenderPresent(renderer);
 
-    // The event data
-    SDL_Event e;
-    SDL_zero(e);
+    return SDL_APP_CONTINUE;
+}
 
-    while (!quit) {
-      while (SDL_PollEvent(&e)) {
-        // TODO: Add event manager here
-        if (e.type == SDL_EVENT_QUIT) {
-          quit = true;
-        }
-      }
-      SDL_FillSurfaceRect(gScreenSurface, nullptr,
-                          SDL_MapSurfaceRGB(gScreenSurface, 0xFF, 0xFF, 0xFF));
-      SDL_UpdateWindowSurface(gWindow);
-    }
-  }
-  close();
-
-  return exitCode;
+void SDL_AppQuit(void *appstate, SDL_AppResult result)
+{
+    /* SDL will clean up the window/renderer for us. */
 }
