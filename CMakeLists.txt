@@ -1,0 +1,21 @@
+cmake_minimum_required(VERSION 3.16)
+project(entropy)
+
+# set the output directory for built objects.
+# This makes sure that the dynamic library goes into the build directory automatically.
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+
+add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
+
+set(EXE_TYPE "")
+if(WIN32)
+  set(EXE_TYPE WIN32)
+elseif(APPLE)
+  set(EXE_TYPE MACOSX_BUNDLE)
+endif()
+
+add_executable(entropy ${EXE_TYPE} src/main.cpp)
+
+# Link to the actual SDL3 library.
+target_link_libraries(entropy PRIVATE SDL3::SDL3)

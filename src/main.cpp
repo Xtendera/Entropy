@@ -1,6 +1,5 @@
 #include <iostream>
 
 int main() {
-  std::cout << "App is running.\n";
-  return 0;
+  std::cout << "Test 123";
 }
