@@ -5,6 +5,8 @@ project(entropy)
 # This makes sure that the dynamic library goes into the build directory automatically.
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 
@@ -13,6 +15,8 @@ if(WIN32)
   set(EXE_TYPE WIN32)
 elseif(APPLE)
   set(EXE_TYPE MACOSX_BUNDLE)
+elseif(EMSCRIPTEN)
+  set(CMAKE_EXECUTABLE_SUFFIX ".html" CACHE INTERNAL "")
 endif()
 
 add_executable(entropy ${EXE_TYPE} src/main.cpp)

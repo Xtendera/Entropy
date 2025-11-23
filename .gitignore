@@ -1,109 +1,15 @@
-# Meson build directories
-build/
-builddir/
-_build/
-meson-logs/
-meson-private/
-
-# Meson output files
+CMakeLists.txt.user
+CMakeCache.txt
+CMakeFiles
+CMakeScripts
+Testing
+Makefile
+cmake_install.cmake
+install_manifest.txt
 compile_commands.json
-meson-info/
-
-# Build artifacts
-*.o
-*.so
-*.a
-*.dylib
-*.dll
-*.exe
-*.out
-*.app
-
-# Subprojects
-subprojects/*
-!subprojects/*.wrap
-!subprojects/packagecache/
-
-# Testing
-test-results/
-*.log
-*.trs
-
-# IDE and Editor files
-# Visual Studio Code
-.vscode/
-*.code-workspace
-
-# JetBrains IDEs
-.idea/
-*.iml
-*.iws
-cmake-build-*/
-
-# Vim
-*.swp
-*.swo
-*~
-.*.swp
-
-# Emacs
-*~
-\#*\#
-.\#*
-
-# Sublime Text
-*.sublime-project
-*.sublime-workspace
-
-# Eclipse
-.project
-.cproject
-.settings/
-
-# macOS
-.DS_Store
-.AppleDouble
-.LSOverride
-
-# Linux
-*~
-.directory
-.Trash-*
-
-# Windows
-Thumbs.db
-ehthumbs.db
-Desktop.ini
-$RECYCLE.BIN/
-
-# Backup files
-*.bak
-*.backup
-*.orig
-
-# Core dumps
-core
-core.*
-
-# Compiled documentation
-docs/_build/
-docs/html/
-docs/latex/
-
-# Python
-__pycache__/
-*.py[cod]
-*$py.class
-.Python
-*.egg-info/
-
-# Package managers
-node_modules/
-.npm/
-
-# Coverage reports
-*.gcov
-*.gcda
-*.gcno
-coverage/
-htmlcov/
+CTestTestfile.cmake
+_deps
+CMakeUserPresets.json
+.cache
+.idea
+build
