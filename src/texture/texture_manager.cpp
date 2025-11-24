@@ -27,6 +27,14 @@ bool TextureManager::loadTexture(std::string key, std::string filePath) {
   return true;
 }
 
+void TextureManager::addTexture(std::string key, Texture* texture) {
+  auto it = texMap.find(key);
+  if (it != texMap.end()) {
+    delete it->second;
+  }
+  texMap[key] = texture;
+}
+
 Texture* TextureManager::getTexture(std::string key) {
   auto it = texMap.find(key);
   if (it != texMap.end()) {

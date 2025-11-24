@@ -11,6 +11,7 @@ public:
   TextureManager(SDL_Renderer *renderer);
   ~TextureManager();
   bool loadTexture(std::string key, std::string filePath);
+  void addTexture(std::string key, Texture* texture);
   Texture* getTexture(std::string key);
   bool destroyTexture(std::string key);
 private:
