@@ -18,6 +18,11 @@ public:
   SDL_Window *getWindow() const { return window; }
   TextureManager *getTextureManager() { return textureManager; }
   Emitter *getEmitter() { return emitter; }
+  int getWindowWidth() const { return windowX; }
+  int getWindowHeight() const { return windowY; }
+
+  int windowX;
+  int windowY;
 
 private:
   SDL_Window *window;

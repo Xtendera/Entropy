@@ -3,9 +3,20 @@
 #include "SDL3/SDL_render.h"
 #include <string>
 
-Game::Game(Engine* engine) : engine{engine}, font{nullptr} {}
+static Game* g_gameInstance = nullptr;
+
+static void windowResizeCallback(SDL_Event *event) {
+  if (g_gameInstance) {
+    g_gameInstance->onWindowResize(event);
+  }
+}
+
+Game::Game(Engine* engine) : engine{engine}, font{nullptr} {
+  g_gameInstance = this;
+}
 
 Game::~Game() {
+  g_gameInstance = nullptr;
   if (font) {
     TTF_CloseFont(font);
     font = nullptr;
@@ -25,7 +36,7 @@ bool Game::initialize() {
   Texture* titleTexture = new Texture(engine->getRenderer());
   SDL_Color textColor = {255, 255, 255, 255};
   
-  if (!titleTexture->loadFromRenderedText(font, "Entropy", textColor)) {
+  if (!titleTexture->loadFromRenderedText(font, "Entropy Engine", textColor)) {
     delete titleTexture;
     SDL_free(const_cast<char*>(basePath));
     return false;
@@ -33,8 +44,16 @@ bool Game::initialize() {
   
   engine->getTextureManager()->addTexture("title", titleTexture);
   
+  engine->getEmitter()->registerCallback(SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED, windowResizeCallback);
+  
   SDL_free(const_cast<char*>(basePath));
   return true;
+}
+
+void Game::onWindowResize(SDL_Event *event) {
+  if (event->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
+    SDL_GetRenderOutputSize(engine->getRenderer(), &engine->windowX, &engine->windowY);
+  }
 }
 
 void Game::render() {

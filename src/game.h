@@ -12,6 +12,7 @@ public:
   
   bool initialize();
   void render();
+  void onWindowResize(SDL_Event *event);
   
 private:
   Engine* engine;

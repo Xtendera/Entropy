@@ -1,5 +1,4 @@
 #include "SDL3/SDL_init.h"
-#include "SDL3/SDL_log.h"
 #define SDL_MAIN_USE_CALLBACKS
 #include "SDL3/SDL_events.h"
 #include "engine/engine.h"
@@ -13,8 +12,6 @@ constexpr int WINDOW_HEIGHT{480};
 static Engine *engine = nullptr;
 static Game *game = nullptr;
 
-// Testing only
-void mouseEvent(SDL_Event *event) { SDL_Log("Event triggered!"); }
 
 /* This function runs once at startup. */
 SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
@@ -29,8 +26,6 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
   if (!game->initialize()) {
     return SDL_APP_FAILURE;
   }
-
-  engine->getEmitter()->registerCallback(SDL_EVENT_MOUSE_WHEEL, mouseEvent);
 
   return SDL_APP_CONTINUE;
 }
@@ -54,7 +49,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
 }
 
 void SDL_AppQuit(void *appstate, SDL_AppResult result) {
-  // Clean up game and engine before SDL destroys renderer
   if (game) {
     delete game;
     game = nullptr;
