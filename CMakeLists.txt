@@ -8,6 +8,11 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+if(EMSCRIPTEN)
+  set(SDLTTF_HARFBUZZ ON CACHE BOOL "Use harfbuzz for text shaping" FORCE)
+  set(SDLTTF_VENDORED ON CACHE BOOL "Use vendored freetype/harfbuzz" FORCE)
+endif()
+
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_ttf EXCLUDE_FROM_ALL)
@@ -41,3 +46,9 @@ add_dependencies(entropy copy_assets)
 
 # Link to the actual SDL3 library.
 target_link_libraries(entropy PRIVATE SDL3_image::SDL3_image SDL3::SDL3 SDL3_ttf::SDL3_ttf)
+
+if(EMSCRIPTEN)
+  target_link_options(entropy PRIVATE
+    "SHELL:--preload-file ${CMAKE_CURRENT_SOURCE_DIR}/assets@/assets"
+  )
+endif()
