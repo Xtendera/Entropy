@@ -31,6 +31,7 @@ target_sources(entropy PRIVATE
   src/texture/texture_manager.cpp
   src/engine/engine.cpp
   src/emitter/emitter.cpp
+  src/physics/motion.cpp
 )
 
 add_custom_target(copy_assets
