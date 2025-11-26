@@ -8,10 +8,8 @@ set(CMAKE_LIBRARY_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}/$<CONFIGURATION>")
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-if(EMSCRIPTEN)
-  set(SDLTTF_HARFBUZZ ON CACHE BOOL "Use harfbuzz for text shaping" FORCE)
-  set(SDLTTF_VENDORED ON CACHE BOOL "Use vendored freetype/harfbuzz" FORCE)
-endif()
+set(SDLTTF_HARFBUZZ ON CACHE BOOL "Use harfbuzz for text shaping" FORCE)
+set(SDLTTF_VENDORED ON CACHE BOOL "Use vendored freetype/harfbuzz" FORCE)
 
 add_subdirectory(vendored/SDL EXCLUDE_FROM_ALL)
 add_subdirectory(vendored/SDL_image EXCLUDE_FROM_ALL)
