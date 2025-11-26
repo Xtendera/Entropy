@@ -42,6 +42,11 @@ bool Engine::initialize(int windowWidth, int windowHeight) {
     return false;
   }
 
+  if (!SDL_SetRenderLogicalPresentation(renderer, windowWidth, windowHeight, SDL_LOGICAL_PRESENTATION_LETTERBOX)) {
+    SDL_Log("Couldn't set logical presentation: %s", SDL_GetError());
+    return false;
+  }
+
   if (TTF_Init() == false) {
     SDL_Log( "SDL_ttf could not initialize! SDL_ttf error: %s\n", SDL_GetError() );
     return false;

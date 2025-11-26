@@ -6,8 +6,8 @@
 #include <SDL3/SDL.h>
 #include <SDL3/SDL_main.h>
 
-constexpr int WINDOW_WIDTH{640};
-constexpr int WINDOW_HEIGHT{480};
+constexpr int WINDOW_WIDTH{3840};
+constexpr int WINDOW_HEIGHT{2160};
 
 static Engine *engine = nullptr;
 static Game *game = nullptr;

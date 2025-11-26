@@ -6,12 +6,6 @@
 
 static Game *g_gameInstance = nullptr;
 
-static void windowResizeCallback(SDL_Event *event) {
-  if (g_gameInstance) {
-    g_gameInstance->onWindowResize(event);
-  }
-}
-
 Game::Game(Engine *engine) : engine{engine}, font{nullptr} {
   g_gameInstance = this;
 }
@@ -35,7 +29,8 @@ Game::~Game() {
 bool Game::initialize() {
   const char *basePath = SDL_GetBasePath();
 
-  font = TTF_OpenFont((std::string(basePath) + "assets/font.ttf").c_str(), 48);
+  int fontSize = engine->getWindowHeight() / 15;
+  font = TTF_OpenFont((std::string(basePath) + "assets/font.ttf").c_str(), fontSize);
   if (!font) {
     SDL_Log("Failed to load font! SDL_ttf error: %s", SDL_GetError());
     SDL_free(const_cast<char *>(basePath));
@@ -63,27 +58,15 @@ bool Game::initialize() {
 
   ball2_motion = new Motion();
 
-  int windowWidth, windowHeight;
-  SDL_GetRenderOutputSize(engine->getRenderer(), &windowWidth, &windowHeight);
-  
-  ball2_motion->position = windowHeight * 0.75;
+  // Use logical size for positioning
+  ball2_motion->position = engine->getWindowHeight() * 0.75;
   ball2_motion->velocity = 0.0;
   ball2_motion->acceleration = 500.0;
 
   lastTime = SDL_GetTicksNS();
 
-  engine->getEmitter()->registerCallback(SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED,
-                                         windowResizeCallback);
-
   SDL_free(const_cast<char *>(basePath));
   return true;
-}
-
-void Game::onWindowResize(SDL_Event *event) {
-  if (event->type == SDL_EVENT_WINDOW_PIXEL_SIZE_CHANGED) {
-    SDL_GetRenderOutputSize(engine->getRenderer(), &engine->windowX,
-                            &engine->windowY);
-  }
 }
 
 void Game::render() {
@@ -100,24 +83,18 @@ void Game::render() {
 
   Texture *titleTexture = engine->getTextureManager()->getTexture("title");
   if (titleTexture) {
-    int windowWidth, windowHeight;
-    SDL_GetRenderOutputSize(engine->getRenderer(), &windowWidth, &windowHeight);
-
-    float x = (windowWidth - titleTexture->getWidth()) * 0.5f;
-    float y = (windowHeight - titleTexture->getHeight()) * 0.5f;
+    float x = (engine->getWindowWidth() - titleTexture->getWidth()) * 0.5f;
+    float y = (engine->getWindowHeight() - titleTexture->getHeight()) * 0.5f;
 
     titleTexture->render(x, y);
   }
 
   Texture *ballTexture = engine->getTextureManager()->getTexture("ball");
   if (ballTexture) {
-    int windowWidth, windowHeight;
-    SDL_GetRenderOutputSize(engine->getRenderer(), &windowWidth, &windowHeight);
-
-    float ballX = windowWidth * 0.25f - ballTexture->getWidth() * 0.5f;
+    float ballX = engine->getWindowWidth() * 0.25f - ballTexture->getWidth() * 0.5f;
     float ballY = (float)ball_motion->position;
 
-    if (ballY >= windowHeight * 0.75) {
+    if (ballY >= engine->getWindowHeight() * 0.75) {
       // Ball is at the "bounce" level, so reverse the velocity
       ball_motion->velocity = -800.0f;
     }
@@ -126,13 +103,10 @@ void Game::render() {
   }
 
   if (ballTexture) {
-    int windowWidth, windowHeight;
-    SDL_GetRenderOutputSize(engine->getRenderer(), &windowWidth, &windowHeight);
-
-    float ball2X = windowWidth * 0.75f - ballTexture->getWidth() * 0.5f;
+    float ball2X = engine->getWindowWidth() * 0.75f - ballTexture->getWidth() * 0.5f;
     float ball2Y = (float)ball2_motion->position;
 
-    if (ball2Y >= windowHeight * 0.75) {
+    if (ball2Y >= engine->getWindowHeight() * 0.75) {
       ball2_motion->velocity = -800.0f;
     }
 
