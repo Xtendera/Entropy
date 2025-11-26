@@ -6,6 +6,7 @@
 #include "../texture/texture_manager.h"
 #include "../time/frame_manager.h"
 #include "SDL3/SDL_render.h"
+#include <memory>
 
 class Engine {
 public:
@@ -17,9 +18,9 @@ public:
 
   SDL_Renderer *getRenderer() const { return renderer; }
   SDL_Window *getWindow() const { return window; }
-  TextureManager *getTextureManager() { return textureManager; }
-  FrameManager *getFrameManager() { return frameManager; }
-  Emitter *getEmitter() { return emitter; }
+  TextureManager *getTextureManager() { return textureManager.get(); }
+  FrameManager *getFrameManager() { return frameManager.get(); }
+  Emitter *getEmitter() { return emitter.get(); }
   int getWindowWidth() const { return windowX; }
   int getWindowHeight() const { return windowY; }
 
@@ -31,10 +32,10 @@ private:
   SDL_Renderer *renderer;
   // This is the global textureManager. Subcomponents (e.g. levels) should
   // create their own.
-  TextureManager *textureManager;
-  Emitter *emitter;
+  std::unique_ptr<TextureManager> textureManager;
+  std::unique_ptr<Emitter> emitter;
   // Global font
   TTF_Font *gFont;
-  FrameManager *frameManager;
+  std::unique_ptr<FrameManager> frameManager;
 };
 #endif

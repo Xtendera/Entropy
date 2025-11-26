@@ -1,5 +1,6 @@
 #ifndef TEXTURE_MANAGER_H
 #define TEXTURE_MANAGER_H
+#include <memory>
 #pragma once
 
 #include "SDL3/SDL_render.h"
@@ -16,6 +17,6 @@ public:
   bool destroyTexture(std::string key);
 private:
   SDL_Renderer *renderer;
-  std::map<std::string, Texture*> texMap;
+  std::map<std::string, std::unique_ptr<Texture>> texMap;
 };
 #endif

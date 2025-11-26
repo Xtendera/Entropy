@@ -5,40 +5,37 @@ TextureManager::TextureManager(SDL_Renderer *renderer) {
 }
 
 TextureManager::~TextureManager() {
-  for (auto& pair : texMap) {
-    delete pair.second;
-  }
   texMap.clear();
 }
 
 bool TextureManager::loadTexture(std::string key, std::string filePath) {
-  Texture *tex = new Texture(renderer);
+  std::unique_ptr<Texture> tex = std::make_unique<Texture>(renderer);
   if (!tex->loadFromFile(filePath)) {
-    delete tex;
+    tex->destroy();
     return false;
   }
   
   auto it = texMap.find(key);
   if (it != texMap.end()) {
-    delete it->second;
+    it->second->destroy();
   }
   
-  texMap[key] = tex;
+  texMap[key] = std::move(tex);
   return true;
 }
 
 void TextureManager::addTexture(std::string key, Texture* texture) {
   auto it = texMap.find(key);
   if (it != texMap.end()) {
-    delete it->second;
+    it->second->destroy();
   }
-  texMap[key] = texture;
+  texMap[key] = std::unique_ptr<Texture>(texture);
 }
 
 Texture* TextureManager::getTexture(std::string key) {
   auto it = texMap.find(key);
   if (it != texMap.end()) {
-    return it->second;
+    return it->second.get();
   }
   return nullptr;
 }
@@ -48,7 +45,7 @@ bool TextureManager::destroyTexture(std::string key) {
   if (it == texMap.end()) {
     return false;
   }
-  delete it->second;
+  it->second->destroy();
   texMap.erase(it);
   return true;
 }

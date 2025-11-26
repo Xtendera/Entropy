@@ -3,6 +3,8 @@
 
 FrameManager::FrameManager(): lastTime{0}, deltaTime{0}, frameCallbacks{} {}
 
+FrameManager::~FrameManager() {}
+
 void FrameManager::registerUpdate(void (*callback)(double)) {
     frameCallbacks.emplace_back(callback);
 }

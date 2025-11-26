@@ -1,21 +1,13 @@
 #include "engine.h"
 #include "SDL3/SDL_render.h"
+#include <memory>
 
 Engine::Engine()
-    : window{nullptr}, renderer{nullptr}, textureManager{nullptr},
-      emitter{nullptr}, windowX{0}, windowY{0}, gFont{nullptr}, frameManager{nullptr} {}
+    : window{nullptr}, renderer{nullptr}, windowX{0}, windowY{0}, gFont{nullptr} {}
 
 Engine::~Engine() {}
 
 void Engine::shutdown() {
-  if (textureManager) {
-    delete textureManager;
-    textureManager = nullptr;
-  }
-  if (emitter) {
-    delete emitter;
-    emitter = nullptr;
-  }
   if (renderer) {
     SDL_DestroyRenderer(renderer);
     renderer = nullptr;
@@ -52,11 +44,11 @@ bool Engine::initialize(int windowWidth, int windowHeight) {
     return false;
   }
 
-  frameManager = new FrameManager();
+  frameManager = std::make_unique<FrameManager>();
 
-  textureManager = new TextureManager(renderer);
+  textureManager = std::make_unique<TextureManager>(renderer);
 
-  emitter = new Emitter();
+  emitter = std::make_unique<Emitter>();
 
   return true;
 }
