@@ -4,6 +4,7 @@
 
 #include "../emitter/emitter.h"
 #include "../texture/texture_manager.h"
+#include "../time/frame_manager.h"
 #include "SDL3/SDL_render.h"
 
 class Engine {
@@ -17,6 +18,7 @@ public:
   SDL_Renderer *getRenderer() const { return renderer; }
   SDL_Window *getWindow() const { return window; }
   TextureManager *getTextureManager() { return textureManager; }
+  FrameManager *getFrameManager() { return frameManager; }
   Emitter *getEmitter() { return emitter; }
   int getWindowWidth() const { return windowX; }
   int getWindowHeight() const { return windowY; }
@@ -32,6 +34,7 @@ private:
   TextureManager *textureManager;
   Emitter *emitter;
   // Global font
-  TTF_Font *gFont{nullptr};
+  TTF_Font *gFont;
+  FrameManager *frameManager;
 };
 #endif

@@ -2,8 +2,8 @@
 #include "SDL3/SDL_render.h"
 
 Engine::Engine()
-    : window(nullptr), renderer(nullptr), textureManager(nullptr),
-      emitter(nullptr), windowX(0), windowY(0) {}
+    : window{nullptr}, renderer{nullptr}, textureManager{nullptr},
+      emitter{nullptr}, windowX{0}, windowY{0}, gFont{nullptr}, frameManager{nullptr} {}
 
 Engine::~Engine() {}
 
@@ -51,6 +51,8 @@ bool Engine::initialize(int windowWidth, int windowHeight) {
     SDL_Log( "SDL_ttf could not initialize! SDL_ttf error: %s\n", SDL_GetError() );
     return false;
   }
+
+  frameManager = new FrameManager();
 
   textureManager = new TextureManager(renderer);
 
