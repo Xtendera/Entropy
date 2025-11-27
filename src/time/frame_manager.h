@@ -11,7 +11,6 @@ public:
   ~FrameManager();
 
   void registerUpdate(void (*callback)(double));
-
   void update();
   double getDeltaTime() { return deltaTime; };
 

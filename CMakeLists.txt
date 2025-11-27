@@ -36,6 +36,8 @@ target_sources(entropy PRIVATE
   src/emitter/emitter.cpp
   src/physics/motion.cpp
   src/time/frame_manager.cpp
+  src/time/timer.cpp
+  src/scene/scene_manager.cpp
 )
 
 add_custom_target(copy_assets

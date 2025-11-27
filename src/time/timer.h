@@ -13,7 +13,7 @@ public:
   // Actions
   void start();
   void stop();
-  void pause();
+  void pause(); 
   void unpause();
 
   // Get timer time

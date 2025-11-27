@@ -5,6 +5,7 @@
 #include "../emitter/emitter.h"
 #include "../texture/texture_manager.h"
 #include "../time/frame_manager.h"
+#include "../scene/scene_manager.h"
 #include "SDL3/SDL_render.h"
 #include <memory>
 
@@ -30,6 +31,7 @@ public:
 private:
   SDL_Window *window;
   SDL_Renderer *renderer;
+  SceneManager *sceneManager;
   // This is the global textureManager. Subcomponents (e.g. levels) should
   // create their own.
   std::unique_ptr<TextureManager> textureManager;
