@@ -38,6 +38,7 @@ target_sources(entropy PRIVATE
   src/time/frame_manager.cpp
   src/time/timer.cpp
   src/scene/scene_manager.cpp
+  src/levels/menu.cpp
 )
 
 add_custom_target(copy_assets

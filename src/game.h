@@ -2,9 +2,9 @@
 #define GAME_H
 #pragma once
 
-#include "SDL3_ttf/SDL_ttf.h"
 #include "engine/engine.h"
-#include "physics/motion.h"
+#include "scene/scene_manager.h"
+#include <memory>
 
 class Game {
 public:
@@ -12,15 +12,12 @@ public:
   ~Game();
 
   bool initialize();
-  void render();
-  void onWindowResize(SDL_Event *event);
+  void update(float deltaTime);
+  void handleInput(SDL_Event *event);
 
 private:
   Engine *engine;
-  TTF_Font *font;
-  Motion *ball_motion;
-  Motion *ball2_motion;
-  Uint64 lastTime;
+  std::unique_ptr<SceneManager> sceneManager;
 };
 
 #endif

@@ -36,6 +36,8 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
     return SDL_APP_SUCCESS; /* end the program, reporting success to the OS. */
   }
 
+  game->handleInput(event);
+  
   // Event Emitter
   engine->getEmitter()->emitEvent(event->type, event);
 
@@ -44,8 +46,11 @@ SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
 
 /* This function runs once per frame, and is the heart of the program. */
 SDL_AppResult SDL_AppIterate(void *appstate) {
-  engine->getFrameManager()->update();
-  game->render();
+  engine->getFrameManager()->tick();
+  double deltaTime = engine->getFrameManager()->getDeltaTime();
+  
+  game->update(deltaTime);
+  
   return SDL_APP_CONTINUE;
 }
 
