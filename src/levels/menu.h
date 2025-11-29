@@ -23,7 +23,10 @@ private:
   TTF_Font *titleFont;
   Texture *titleTexture;
   std::unique_ptr<Button> playBtn;
-  float playBtnX, playBtnY;
+  std::unique_ptr<Button> optionsBtn;
+  std::unique_ptr<Button> quitBtn;
+  float playBtnX, playBtnY, optionsBtnX, optionsBtnY, quitBtnX, quitBtnY;
+  bool prevPlayBtn, prevOptionsBtn, prevQuitBtn;
 };
 
 #endif
