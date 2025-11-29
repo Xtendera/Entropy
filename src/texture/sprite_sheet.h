@@ -6,9 +6,13 @@
 
 class SpriteSheet {
 public:
-  SpriteSheet(Texture* texture, int frameWidth, int frameHeight);
+  SpriteSheet(Texture *texture, int frameWidth, int frameHeight);
+  void renderFrame(float x, float y, int frameIndex, float scaleX,
+                   float scaleY);
   void renderFrame(float x, float y, int frameIndex);
   void renderTile(float x, float y, int col, int row);
+  int getFrameWidth() { return frameWidth; };
+  int getFrameHeight() { return frameHeight; };
 
 private:
   Texture *baseTexture;

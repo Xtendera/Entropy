@@ -1,6 +1,6 @@
 #include "menu.h"
-#include "SDL3/SDL_filesystem.h"
 #include "SDL3/SDL_render.h"
+#include <memory>
 #include <string>
 
 MenuScene::MenuScene(Engine *engine) 
@@ -18,14 +18,12 @@ MenuScene::~MenuScene() {
 }
 
 void MenuScene::onEnter() {
-  const char *basePath = SDL_GetBasePath();
+  std::string fontPath = engine->getBasePath() + "/assets/fonts/science_gothic.ttf";
 
-  titleFont = TTF_OpenFont(
-      (std::string(basePath) + "assets/fonts/science_gothic.ttf").c_str(), 144);
+  titleFont = TTF_OpenFont(fontPath.c_str(), 196);
   
   if (!titleFont) {
     SDL_Log("Failed to load font! SDL_ttf error: %s", SDL_GetError());
-    SDL_free(const_cast<char *>(basePath));
     return;
   }
 
@@ -37,8 +35,10 @@ void MenuScene::onEnter() {
     delete titleTexture;
     titleTexture = nullptr;
   }
-  
-  SDL_free(const_cast<char *>(basePath));
+
+  playBtnX = (engine->getWindowWidth() - width) * 0.5f;
+  playBtnY = 600.0f;
+  playBtn = std::make_unique<Button>(engine, "Play", playBtnX, playBtnY);
 }
 
 void MenuScene::onExit() {
@@ -53,9 +53,16 @@ void MenuScene::update(Engine *engine, float deltaTime) {
     float y = 200.0f;
     titleTexture->render(x, y);
   }
+
+  if (playBtn) {
+    playBtn->render(playBtnX, playBtnY);
+  }
   
   SDL_RenderPresent(engine->getRenderer());
 }
 
 void MenuScene::handleInput(SDL_Event *event) {
+  if (playBtn) {
+    playBtn->handleInput(event);
+  }
 }

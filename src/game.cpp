@@ -3,7 +3,9 @@
 
 Game::Game(Engine *engine) : engine{engine} {}
 
-Game::~Game() {}
+Game::~Game() {
+  sceneManager.reset();
+}
 
 bool Game::initialize() {
   sceneManager = std::make_unique<SceneManager>(engine);

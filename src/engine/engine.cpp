@@ -8,6 +8,15 @@ Engine::Engine()
 Engine::~Engine() {}
 
 void Engine::shutdown() {
+  if (gFont) {
+    TTF_CloseFont(gFont);
+    gFont = nullptr;
+  }
+  
+  textureManager.reset();
+  emitter.reset();
+  frameManager.reset();
+  
   if (renderer) {
     SDL_DestroyRenderer(renderer);
     renderer = nullptr;
@@ -49,6 +58,21 @@ bool Engine::initialize(int windowWidth, int windowHeight) {
   textureManager = std::make_unique<TextureManager>(renderer);
 
   emitter = std::make_unique<Emitter>();
+
+  const char *basePathC = SDL_GetBasePath();
+
+  // Store the basePath as an object in the Engine for future use.
+  basePath = std::string(basePathC);
+
+  SDL_free(const_cast<char *>(basePathC));
+
+  gFont = TTF_OpenFont(
+      (basePath + "assets/fonts/byte_bounce.ttf").c_str(), 144);
+  
+  if (!gFont) {
+    SDL_Log("Failed to load font! SDL_ttf error: %s", SDL_GetError());
+    return false;
+  }
 
   return true;
 }

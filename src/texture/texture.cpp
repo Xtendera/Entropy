@@ -20,6 +20,11 @@ bool Texture::loadFromFile(std::string path) {
   height = surface->h;
 
   texture = SDL_CreateTextureFromSurface(renderer, surface);
+  
+  // Nearest-neighbhor scaling for pixelated textures
+  if (texture) {
+    SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+  }
 
   // Done with the surface, texture stores an internal copy
   SDL_DestroySurface(surface);
@@ -43,6 +48,11 @@ bool Texture::loadFromRenderedText(TTF_Font *font, std::string textureText,
   height = textSurface->h;
   
   texture = SDL_CreateTextureFromSurface(renderer, textSurface);
+  
+  // Set nearest-neighbor filtering for pixel-perfect scaling
+  if (texture) {
+    SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
+  }
   
   SDL_DestroySurface(textSurface);
   
