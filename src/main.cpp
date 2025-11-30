@@ -32,7 +32,8 @@ SDL_AppResult SDL_AppInit(void **appstate, int argc, char *argv[]) {
 
 // AppEvent handler
 SDL_AppResult SDL_AppEvent(void *appstate, SDL_Event *event) {
-  if (event->type == SDL_EVENT_QUIT) {
+  if (event->type == SDL_EVENT_QUIT ||
+      event->type == SDL_EVENT_WINDOW_CLOSE_REQUESTED) {
     return SDL_APP_SUCCESS; /* end the program, reporting success to the OS. */
   }
 
@@ -50,7 +51,6 @@ SDL_AppResult SDL_AppIterate(void *appstate) {
   double deltaTime = engine->getFrameManager()->getDeltaTime();
   
   game->update(deltaTime);
-  
   return SDL_APP_CONTINUE;
 }
 
@@ -61,7 +61,6 @@ void SDL_AppQuit(void *appstate, SDL_AppResult result) {
   }
   
   if (engine) {
-    engine->shutdown();
     delete engine;
     engine = nullptr;
   }

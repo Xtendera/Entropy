@@ -10,13 +10,14 @@ Engine::~Engine() {
 }
 
 void Engine::shutdown() {
+  sceneManager.reset();
+  textureManager.reset();
+  
   if (gFont) {
     TTF_CloseFont(gFont);
     gFont = nullptr;
   }
   
-  sceneManager.reset();
-  textureManager.reset();
   emitter.reset();
   frameManager.reset();
   
@@ -68,8 +69,6 @@ bool Engine::initialize(int windowWidth, int windowHeight) {
 
   // Store the basePath as an object in the Engine for future use.
   basePath = std::string(basePathC);
-
-  SDL_free(const_cast<char *>(basePathC));
 
   gFont = TTF_OpenFont(
       (basePath + "assets/fonts/byte_bounce.ttf").c_str(), 144);

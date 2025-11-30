@@ -3,6 +3,7 @@
 #pragma once
 
 #include "../scene/scene.h"
+#include "../characters/player.h"
 
 class SandboxScene : public Scene {
 public:
@@ -16,6 +17,7 @@ public:
 private:
   Engine *engine;
   Texture *backgroundTexture;
+  std::unique_ptr<Player> player;
 };
 
 #endif

@@ -9,16 +9,7 @@ MenuScene::MenuScene(Engine *engine)
     : engine{engine}, titleFont{nullptr}, titleTexture{nullptr},
       prevPlayBtn{false}, prevOptionsBtn{false}, prevQuitBtn{false} {}
 
-MenuScene::~MenuScene() {
-  if (titleTexture) {
-    delete titleTexture;
-    titleTexture = nullptr;
-  }
-  if (titleFont) {
-    TTF_CloseFont(titleFont);
-    titleFont = nullptr;
-  }
-}
+MenuScene::~MenuScene() {}
 
 void MenuScene::onEnter() {
 
@@ -66,7 +57,20 @@ void MenuScene::onEnter() {
   }
 }
 
-void MenuScene::onExit() {}
+void MenuScene::onExit() {
+  playBtn.reset();
+  optionsBtn.reset();
+  quitBtn.reset();
+  
+  if (titleTexture) {
+    delete titleTexture;
+    titleTexture = nullptr;
+  }
+  if (titleFont) {
+    TTF_CloseFont(titleFont);
+    titleFont = nullptr;
+  }
+}
 
 void MenuScene::update(Engine *engine, float deltaTime) {
   SDL_RenderClear(engine->getRenderer());

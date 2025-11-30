@@ -26,6 +26,15 @@ endif()
 
 add_executable(entropy ${EXE_TYPE})
 
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+  target_compile_options(entropy PRIVATE -fsanitize=address)
+  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_link_options(entropy PRIVATE -fsanitize=address -static-libasan)
+  else()
+    target_link_options(entropy PRIVATE -fsanitize=address)
+  endif()
+endif()
+
 target_sources(entropy PRIVATE
   src/main.cpp
   src/game.cpp
@@ -40,11 +49,12 @@ target_sources(entropy PRIVATE
   src/scene/scene_manager.cpp
   src/levels/menu.cpp
   src/levels/sandbox.cpp
+  src/characters/player.cpp
   src/ui/button.cpp
 )
 
 add_custom_target(copy_assets
-    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/assets ${CMAKE_CURRENT_BINARY_DIR}/assets
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_LIST_DIR}/assets ${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/assets
 )
 add_dependencies(entropy copy_assets)
 
