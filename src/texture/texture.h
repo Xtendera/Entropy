@@ -1,5 +1,6 @@
 #ifndef TEXTURE_H
 #define TEXTURE_H
+#include "SDL3/SDL_surface.h"
 #pragma once
 
 #include <SDL3/SDL.h>
@@ -17,8 +18,8 @@ public:
   bool loadFromRenderedText(TTF_Font *font, std::string textureText, SDL_Color textColor);
 #endif
   void destroy();
-  void render(float x, float y, float scaleX = 1.0f, float scaleY = 1.0f);
-  void render(float x, float y, SDL_FRect *clip, float width, float height);
+  void render(float x, float y, float scaleX = 1.0f, float scaleY = 1.0f, SDL_FlipMode flipMode = SDL_FLIP_NONE);
+  void render(float x, float y, SDL_FRect *clip, float width, float height, SDL_FlipMode flipMode = SDL_FLIP_NONE);
   int getWidth() { return width; };
   int getHeight() { return height; };
 

@@ -4,9 +4,19 @@
 
 Motion::Motion()
     : position{0}, velocity{0}, acceleration{0},
-      maxVelocity{std::numeric_limits<double>::max()} {}
+      maxVelocity{std::numeric_limits<double>::max()}, friction{0} {}
 
 void Motion::update(double deltaTime) {
+  if (acceleration == 0.0 && friction > 0.0) {
+    if (velocity > 0) {
+      velocity -= friction * deltaTime;
+      if (velocity < 0) velocity = 0;
+    } else if (velocity < 0) {
+      velocity += friction * deltaTime;
+      if (velocity > 0) velocity = 0;
+    }
+  }
+
   double newVel = velocity + acceleration * deltaTime;
 
   newVel = std::clamp(newVel, -maxVelocity, maxVelocity);
@@ -14,8 +24,10 @@ void Motion::update(double deltaTime) {
   velocity = newVel;
 }
 
-// Reason for the getter/setter functions is bcs maxVelocity needs to be
-// positive/absolute
 void Motion::setMaxVelocity(double maxVelocity) {
   this->maxVelocity = std::abs(maxVelocity);
+}
+
+void Motion::setFriction(double friction) {
+  this->friction = std::abs(friction);
 }

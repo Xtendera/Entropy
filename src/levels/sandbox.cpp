@@ -5,7 +5,7 @@ SandboxScene::SandboxScene(Engine *engine): engine{engine}, backgroundTexture{nu
 
 void SandboxScene::onEnter() {
   backgroundTexture = engine->getTextureManager()->getTexture("background");
-  player = std::make_unique<Player>(engine, 60.0f, 1960.0f);
+  player = std::make_unique<Player>(engine, 90.0f, 1808.0f);
 }
 
 void SandboxScene::onExit() {
@@ -25,5 +25,5 @@ void SandboxScene::update(Engine *engine, float deltaTime) {
 }
 
 void SandboxScene::handleInput(SDL_Event *event) {
-
+  player->handleInput(event);
 }

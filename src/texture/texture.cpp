@@ -20,7 +20,7 @@ bool Texture::loadFromFile(std::string path) {
   height = surface->h;
 
   texture = SDL_CreateTextureFromSurface(renderer, surface);
-  
+
   // Nearest-neighbhor scaling for pixelated textures
   if (texture) {
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
@@ -43,19 +43,19 @@ bool Texture::loadFromRenderedText(TTF_Font *font, std::string textureText,
             SDL_GetError());
     return false;
   }
-  
+
   width = textSurface->w;
   height = textSurface->h;
-  
+
   texture = SDL_CreateTextureFromSurface(renderer, textSurface);
-  
+
   // Set nearest-neighbor filtering for pixel-perfect scaling
   if (texture) {
     SDL_SetTextureScaleMode(texture, SDL_SCALEMODE_NEAREST);
   }
-  
+
   SDL_DestroySurface(textSurface);
-  
+
   return texture != nullptr;
 }
 #endif
@@ -69,16 +69,18 @@ void Texture::destroy() {
   height = 0;
 }
 
-void Texture::render(float x, float y, float scaleX, float scaleY) {
+void Texture::render(float x, float y, float scaleX, float scaleY,
+                     SDL_FlipMode flipMode) {
   SDL_FRect dstRect{x, y, (float)width * scaleX, (float)height * scaleY};
 
-  SDL_RenderTexture(renderer, texture, nullptr, &dstRect);
+  SDL_RenderTextureRotated(renderer, texture, nullptr, &dstRect, 0.0f, nullptr,
+                           flipMode);
 }
 
 // You should probably not be calling this function without using a sprite sheet
 // object
 void Texture::render(float x, float y, SDL_FRect *clip, float width,
-                     float height) {
+                     float height, SDL_FlipMode flipMode) {
   SDL_FRect dstRect{x, y, (float)width, (float)height};
 
   if (clip != nullptr) {
@@ -94,7 +96,8 @@ void Texture::render(float x, float y, SDL_FRect *clip, float width,
   }
 
   // srcrect = the clip rect
-  SDL_RenderTexture(renderer, texture, clip, &dstRect);
+  SDL_RenderTextureRotated(renderer, texture, clip, &dstRect, 0.0f, nullptr,
+                           flipMode);
 }
 
 Texture::~Texture() { destroy(); }
