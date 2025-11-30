@@ -21,6 +21,7 @@ public:
 private:
   Engine *engine;
   TTF_Font *titleFont;
+  Texture *backgroundTexture;
   Texture *titleTexture;
   std::unique_ptr<Button> playBtn;
   std::unique_ptr<Button> optionsBtn;

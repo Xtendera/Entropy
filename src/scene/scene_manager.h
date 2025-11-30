@@ -11,6 +11,7 @@ class Scene;
 class SceneManager {
 public:
   SceneManager(Engine *engine);
+  ~SceneManager();
   void pushScene(std::unique_ptr<Scene> scene);
   void popScene();
   void changeScene(std::unique_ptr<Scene> scene);

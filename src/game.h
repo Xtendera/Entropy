@@ -3,8 +3,6 @@
 #pragma once
 
 #include "engine/engine.h"
-#include "scene/scene_manager.h"
-#include <memory>
 
 class Game {
 public:
@@ -17,7 +15,6 @@ public:
 
 private:
   Engine *engine;
-  std::unique_ptr<SceneManager> sceneManager;
 };
 
 #endif

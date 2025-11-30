@@ -22,6 +22,7 @@ public:
   TextureManager *getTextureManager() { return textureManager.get(); }
   FrameManager *getFrameManager() { return frameManager.get(); }
   Emitter *getEmitter() { return emitter.get(); }
+  SceneManager *getSceneManager() { return sceneManager.get(); }
   TTF_Font *getGlobalFont() { return gFont; }
   const std::string getBasePath() const { return basePath; }
   int getWindowWidth() const { return windowX; }
@@ -33,13 +34,10 @@ public:
 private:
   SDL_Window *window;
   SDL_Renderer *renderer;
-  SceneManager *sceneManager;
   std:: string basePath;
-  // This is the global textureManager. Subcomponents (e.g. levels) should
-  // create their own.
   std::unique_ptr<TextureManager> textureManager;
   std::unique_ptr<Emitter> emitter;
-  // Global font
+  std::unique_ptr<SceneManager> sceneManager;
   TTF_Font *gFont;
   std::unique_ptr<FrameManager> frameManager;
 };

@@ -3,25 +3,19 @@
 
 Game::Game(Engine *engine) : engine{engine} {}
 
-Game::~Game() {
-  sceneManager.reset();
-}
+Game::~Game() {}
 
 bool Game::initialize() {
-  sceneManager = std::make_unique<SceneManager>(engine);
-  sceneManager->pushScene(std::make_unique<MenuScene>(engine));
-  
+  // Initialize the background that will be used in the menu and elseware
+  engine->getTextureManager()->loadTexture("background", engine->getBasePath() + "/assets/images/background.png");
+  engine->getSceneManager()->pushScene(std::make_unique<MenuScene>(engine));
   return true;
 }
 
 void Game::update(float deltaTime) {
-  if (sceneManager) {
-    sceneManager->update(deltaTime);
-  }
+  engine->getSceneManager()->update(deltaTime);
 }
 
 void Game::handleInput(SDL_Event *event) {
-  if (sceneManager) {
-    sceneManager->handleInput(event);
-  }
+  engine->getSceneManager()->handleInput(event);
 }

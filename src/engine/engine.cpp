@@ -5,7 +5,9 @@
 Engine::Engine()
     : window{nullptr}, renderer{nullptr}, windowX{0}, windowY{0}, gFont{nullptr} {}
 
-Engine::~Engine() {}
+Engine::~Engine() {
+  shutdown();
+}
 
 void Engine::shutdown() {
   if (gFont) {
@@ -13,6 +15,7 @@ void Engine::shutdown() {
     gFont = nullptr;
   }
   
+  sceneManager.reset();
   textureManager.reset();
   emitter.reset();
   frameManager.reset();
@@ -58,6 +61,8 @@ bool Engine::initialize(int windowWidth, int windowHeight) {
   textureManager = std::make_unique<TextureManager>(renderer);
 
   emitter = std::make_unique<Emitter>();
+
+  sceneManager = std::make_unique<SceneManager>(this);
 
   const char *basePathC = SDL_GetBasePath();
 

@@ -1,11 +1,13 @@
 #include "menu.h"
 #include "SDL3/SDL_log.h"
 #include "SDL3/SDL_render.h"
+#include "sandbox.h"
 #include <memory>
 #include <string>
 
-MenuScene::MenuScene(Engine *engine) 
-    : engine{engine}, titleFont{nullptr}, titleTexture{nullptr}, prevPlayBtn{false}, prevOptionsBtn{false}, prevQuitBtn{false} {}
+MenuScene::MenuScene(Engine *engine)
+    : engine{engine}, titleFont{nullptr}, titleTexture{nullptr},
+      prevPlayBtn{false}, prevOptionsBtn{false}, prevQuitBtn{false} {}
 
 MenuScene::~MenuScene() {
   if (titleTexture) {
@@ -19,23 +21,27 @@ MenuScene::~MenuScene() {
 }
 
 void MenuScene::onEnter() {
-  std::string fontPath = engine->getBasePath() + "/assets/fonts/science_gothic.ttf";
+
+  std::string fontPath =
+      engine->getBasePath() + "/assets/fonts/science_gothic.ttf";
 
   titleFont = TTF_OpenFont(fontPath.c_str(), 256);
-  
+
   if (!titleFont) {
     SDL_Log("Failed to load font! SDL_ttf error: %s", SDL_GetError());
     return;
   }
 
   titleTexture = new Texture(engine->getRenderer());
-  SDL_Color white = {255, 255, 255, 255};
-  
+  SDL_Color white = {43, 43, 43, 255};
+
   if (!titleTexture->loadFromRenderedText(titleFont, "Entropy", white)) {
     SDL_Log("Failed to create title texture!");
     delete titleTexture;
     titleTexture = nullptr;
   }
+
+  backgroundTexture = engine->getTextureManager()->getTexture("background");
 
   playBtnX = (engine->getWindowWidth() - BUTTON_WIDTH) * 0.5f;
   playBtnY = 700.0f;
@@ -46,7 +52,8 @@ void MenuScene::onEnter() {
 
   optionsBtnX = (engine->getWindowWidth() - BUTTON_WIDTH) * 0.5f;
   optionsBtnY = 950.0f;
-  optionsBtn = std::make_unique<Button>(engine, "Options", optionsBtnX, optionsBtnY);
+  optionsBtn =
+      std::make_unique<Button>(engine, "Options", optionsBtnX, optionsBtnY);
   if (!optionsBtn) {
     SDL_Log("Failed to create Options button");
   }
@@ -59,13 +66,13 @@ void MenuScene::onEnter() {
   }
 }
 
-void MenuScene::onExit() {
-}
+void MenuScene::onExit() {}
 
 void MenuScene::update(Engine *engine, float deltaTime) {
-  SDL_SetRenderDrawColor(engine->getRenderer(), 25, 25, 50, 255);
   SDL_RenderClear(engine->getRenderer());
-  
+
+  backgroundTexture->render(0, 0, 16.0f, 16.0f);
+
   if (titleTexture) {
     float x = (engine->getWindowWidth() - titleTexture->getWidth()) * 0.5f;
     float y = 200.0f;
@@ -75,11 +82,13 @@ void MenuScene::update(Engine *engine, float deltaTime) {
   playBtn->render(playBtnX, playBtnY);
   optionsBtn->render(optionsBtnX, optionsBtnY);
   quitBtn->render(quitBtnX, quitBtnY);
-  
+
   if (!playBtn->isClicked() && prevPlayBtn) {
-    // TODO: Handle Play event
+    engine->getSceneManager()->pushScene(
+        std::make_unique<SandboxScene>(engine));
+    return;
   }
-  
+
   if (!optionsBtn->isClicked() && prevOptionsBtn) {
     // TODO: Handle Options event
   }

@@ -69,8 +69,8 @@ void Texture::destroy() {
   height = 0;
 }
 
-void Texture::render(float x, float y) {
-  SDL_FRect dstRect{x, y, (float)width, (float)height};
+void Texture::render(float x, float y, float scaleX, float scaleY) {
+  SDL_FRect dstRect{x, y, (float)width * scaleX, (float)height * scaleY};
 
   SDL_RenderTexture(renderer, texture, nullptr, &dstRect);
 }

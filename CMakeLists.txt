@@ -39,6 +39,7 @@ target_sources(entropy PRIVATE
   src/time/timer.cpp
   src/scene/scene_manager.cpp
   src/levels/menu.cpp
+  src/levels/sandbox.cpp
   src/ui/button.cpp
 )
 

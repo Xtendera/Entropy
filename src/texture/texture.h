@@ -17,7 +17,7 @@ public:
   bool loadFromRenderedText(TTF_Font *font, std::string textureText, SDL_Color textColor);
 #endif
   void destroy();
-  void render(float x, float y);
+  void render(float x, float y, float scaleX = 1.0f, float scaleY = 1.0f);
   void render(float x, float y, SDL_FRect *clip, float width, float height);
   int getWidth() { return width; };
   int getHeight() { return height; };

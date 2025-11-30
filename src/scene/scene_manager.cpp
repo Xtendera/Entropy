@@ -3,6 +3,8 @@
 
 SceneManager::SceneManager(Engine *engine) : engine{engine}, sceneStack{} {}
 
+SceneManager::~SceneManager() {}
+
 void SceneManager::pushScene(std::unique_ptr<Scene> scene) {
   if (!sceneStack.empty()) {
     sceneStack.back()->onExit();
@@ -36,7 +38,8 @@ void SceneManager::changeScene(std::unique_ptr<Scene> scene) {
 void SceneManager::update(float deltaTime) {
   if (!sceneStack.empty()) {
     // Updates logic AND renders
-    // TODO: Have a fixedUpdate() and update()/render() methods seperately (would require serious lerping)
+    // TODO: Have a fixedUpdate() and update()/render() methods seperately
+    // (would require serious lerping)
     sceneStack.back()->update(engine, deltaTime);
   }
 }
