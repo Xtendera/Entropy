@@ -20,6 +20,7 @@ private:
 
   Engine *engine;
   Texture *backgroundTexture;
+  Texture *snowTile;
   std::unique_ptr<Player> player;
   
   struct SnowParticle {

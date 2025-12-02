@@ -13,11 +13,16 @@ SandboxScene::SandboxScene(Engine *engine): engine{engine}, backgroundTexture{nu
     particle.opacity = 100 + (std::rand() % 156);  // Range: 100-255
     snowParticles.push_back(particle);
   }
+
+  if (!engine->getTextureManager()->getTexture("snow_tile")) {
+    engine->getTextureManager()->loadTexture("snow_tile", engine->getBasePath() + "/assets/images/snow_tile_1.png");
+  }
+  snowTile = engine->getTextureManager()->getTexture("snow_tile");
 }
 
 void SandboxScene::onEnter() {
   backgroundTexture = engine->getTextureManager()->getTexture("background");
-  player = std::make_unique<Player>(engine, 90.0f, 1808.0f);
+  player = std::make_unique<Player>(engine, 90.0f, 1808.0f - snowTile->getHeight() * 8.0f);
 }
 
 void SandboxScene::onExit() {
@@ -51,6 +56,11 @@ void SandboxScene::update(Engine *engine, float deltaTime) {
   }
 
   drawSnow();
+
+  // Draw blocks
+  for (int i = 0; i < 18; i++) {
+    snowTile->render(i * snowTile->getWidth() * 8.0f, 2160 - (snowTile->getHeight() * 8.0f), 8.0f, 8.0f);
+  }
 
   player->update(deltaTime);
 
