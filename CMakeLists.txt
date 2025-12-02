@@ -28,11 +28,7 @@ add_executable(entropy ${EXE_TYPE})
 
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
   target_compile_options(entropy PRIVATE -fsanitize=address)
-  if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
-    target_link_options(entropy PRIVATE -fsanitize=address -static-libasan)
-  else()
-    target_link_options(entropy PRIVATE -fsanitize=address)
-  endif()
+  target_link_options(entropy PRIVATE -fsanitize=address)
 endif()
 
 target_sources(entropy PRIVATE
