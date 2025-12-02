@@ -4,6 +4,7 @@
 
 #include "../scene/scene.h"
 #include "../characters/player.h"
+#include <vector>
 
 class SandboxScene : public Scene {
 public:
@@ -15,9 +16,18 @@ public:
   void handleInput(SDL_Event *event) override;
 
 private:
+  void drawSnow();
+
   Engine *engine;
   Texture *backgroundTexture;
   std::unique_ptr<Player> player;
+  
+  struct SnowParticle {
+    float x, y;
+    float speed;
+    int opacity;
+  };
+  std::vector<SnowParticle> snowParticles;
 };
 
 #endif

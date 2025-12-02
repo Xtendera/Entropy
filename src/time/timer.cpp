@@ -4,6 +4,8 @@
 
 Timer::Timer() : startTicks{0}, pausedTicks{0}, paused{false}, started{false} {}
 
+Timer::~Timer() {}
+
 void Timer::start() {
   started = true;
   paused = false;

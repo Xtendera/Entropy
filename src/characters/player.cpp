@@ -9,6 +9,8 @@ Player::Player(Engine *engine, double initialX, double initialY)
   playerX = initialX;
   playerY = initialY;
 
+  animationTimer = std::make_unique<Timer>();
+
   Texture *playerTexture = engine->getTextureManager()->getTexture("player");
 
   if (!playerTexture) {
@@ -25,7 +27,7 @@ Player::Player(Engine *engine, double initialX, double initialY)
     return;
   }
 
-  playerSheet = std::make_unique<SpriteSheet>(playerTexture, 21, 22);
+  playerSheet = std::make_unique<SpriteSheet>(playerTexture, 22, 22);
 
   playerMotion = std::make_unique<Motion>();
   playerMotion->position = initialY;
@@ -48,19 +50,38 @@ void Player::update(double deltaTime) {
 
   playerY = playerMotion->position;
 
+  bool isWalking = false;
+
   if (keyD && !keyA) {
     if (playerDirection != SDL_FLIP_NONE) {
       playerDirection = SDL_FLIP_NONE;
     }
     playerX += speed * deltaTime;
+    isWalking = true;
   } else if (keyA && !keyD) {
     if (playerDirection != SDL_FLIP_HORIZONTAL) {
       playerDirection = SDL_FLIP_HORIZONTAL;
     }
     playerX -= speed * deltaTime;
+    isWalking = true;
   }
 
-  playerSheet->renderFrame(playerX, playerY, 0, 16.0f, 16.0f, playerDirection);
+  int frameIndex = 0;
+
+  if (isWalking && playerY == initialY) {
+    if (!animationTimer->isStarted()) {
+      animationTimer->start();
+    }
+    double frameDuration = 0.1;
+    double elapsedSeconds = animationTimer->getTicksNS() / 1000000000.0;
+    int walkFrame = (int)(elapsedSeconds / frameDuration) % 3;
+    frameIndex = walkFrame + 1;
+  } else {
+    animationTimer->stop();
+    frameIndex = 0;
+  }
+
+  playerSheet->renderFrame(playerX, playerY, frameIndex, 16.0f, 16.0f, playerDirection);
 }
 
 void Player::handleInput(SDL_Event *event) {

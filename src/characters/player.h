@@ -7,6 +7,7 @@
 #include "../engine/engine.h"
 #include "../texture/sprite_sheet.h"
 #include "../physics/motion.h"
+#include "../time/timer.h"
 
 class Player {
 public:
@@ -22,6 +23,7 @@ private:
   // The kinematics engine is only used for vertical movement (1D).
   std::unique_ptr<Motion> playerMotion;
   std::unique_ptr<SpriteSheet> playerSheet;
+  std::unique_ptr<Timer> animationTimer;
   bool keyA, keyD;
   SDL_FlipMode playerDirection;
 };

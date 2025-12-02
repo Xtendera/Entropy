@@ -61,7 +61,7 @@ void MenuScene::onExit() {
   playBtn.reset();
   optionsBtn.reset();
   quitBtn.reset();
-  
+
   if (titleTexture) {
     delete titleTexture;
     titleTexture = nullptr;
@@ -85,7 +85,9 @@ void MenuScene::update(Engine *engine, float deltaTime) {
 
   playBtn->render(playBtnX, playBtnY);
   optionsBtn->render(optionsBtnX, optionsBtnY);
+#ifndef __EMSCRIPTEN__
   quitBtn->render(quitBtnX, quitBtnY);
+#endif
 
   if (!playBtn->isClicked() && prevPlayBtn) {
     engine->getSceneManager()->pushScene(
