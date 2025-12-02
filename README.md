@@ -1,7 +1,6 @@
 # Entropy
-A game and game framework written in C++. Currently a work in progress, end goal is to have a functional game called Entropy.
 
-Can also be used a template for your own games!
+A work in progress 2D scrolling platformer made in a **completely custom engine**. The game supports all desktop platforms and web platforms through WebAssembly (WASM).
 
 ## Build
 
