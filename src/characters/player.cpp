@@ -78,7 +78,9 @@ void Player::update(double deltaTime) {
     frameIndex = walkFrame + 1;
   } else {
     animationTimer->stop();
-    frameIndex = 0;
+    if (playerY != initialY) {
+      frameIndex = 4;
+    }
   }
 
   playerSheet->renderFrame(playerX, playerY, frameIndex, 16.0f, 16.0f, playerDirection);
