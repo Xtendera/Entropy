@@ -1,10 +1,17 @@
 #ifndef SANDBOX_H
 #define SANDBOX_H
+#include <memory>
 #pragma once
 
-#include "../scene/scene.h"
 #include "../characters/player.h"
+#include "../scene/scene.h"
 #include <vector>
+
+struct SnowParticle {
+  float x, y;
+  float speed;
+  int opacity;
+};
 
 class SandboxScene : public Scene {
 public:
@@ -22,13 +29,9 @@ private:
   Texture *backgroundTexture;
   Texture *snowTile;
   std::unique_ptr<Player> player;
-  
-  struct SnowParticle {
-    float x, y;
-    float speed;
-    int opacity;
-  };
   std::vector<SnowParticle> snowParticles;
+
+  std::vector<std::unique_ptr<Hitbox>> tileHitboxes;
 };
 
 #endif

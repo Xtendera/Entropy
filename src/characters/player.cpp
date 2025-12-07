@@ -3,9 +3,10 @@
 #include "SDL3/SDL_surface.h"
 #include <memory>
 
-Player::Player(Engine *engine, double initialX, double initialY)
+Player::Player(Engine *engine, double initialX, double initialY,
+               std::vector<std::unique_ptr<Hitbox>> &tileHitboxes)
     : engine{engine}, playerSheet{nullptr}, keyA{false}, keyD{false},
-      speed{700.0}, playerDirection{SDL_FLIP_NONE} {
+      speed{700.0}, playerDirection{SDL_FLIP_NONE}, tileHitboxes{tileHitboxes} {
   playerX = initialX;
   playerY = initialY;
 
@@ -29,6 +30,10 @@ Player::Player(Engine *engine, double initialX, double initialY)
 
   playerSheet = std::make_unique<SpriteSheet>(playerTexture, 22, 22);
 
+  playerHitbox = std::make_unique<Hitbox>(initialX, initialY,
+                                          Player::HITBOX_WIDTH,
+                                          Player::HITBOX_HEIGHT);
+
   playerMotion = std::make_unique<Motion>();
   playerMotion->position = initialY;
 
@@ -39,16 +44,33 @@ Player::Player(Engine *engine, double initialX, double initialY)
 Player::~Player() {}
 
 void Player::update(double deltaTime) {
+  playerMotion->acceleration = isGrounded ? 0.0f : 1800.0f;
 
   playerMotion->update(deltaTime);
+  playerY = playerMotion->position;
 
-  if (playerMotion->position >= initialY && playerMotion->acceleration != 0.0f) {
-    playerMotion->position = initialY;
-    playerMotion->acceleration = 0.0f;
-    playerMotion->velocity = 0;
+  isGrounded = false;
+
+  playerHitbox->setPosition(playerX, playerY);
+
+  for (const auto &hitbox : tileHitboxes) {
+    CollisionResult result = playerHitbox->checkCollision(*hitbox);
+    if (result.collided && result.hitTop && playerMotion->velocity >= 0.0f) {
+      // Land on top of the tile
+      playerMotion->velocity = 0.0f;
+      playerMotion->acceleration = 0.0f;
+      playerY = hitbox->getRect().y - playerHitbox->getRect().h;
+      playerMotion->position = playerY;
+      isGrounded = true;
+    }
   }
 
-  playerY = playerMotion->position;
+  // if (playerMotion->position >= initialY && playerMotion->acceleration !=
+  // 0.0f) {
+  //   playerMotion->position = initialY;
+  //   playerMotion->acceleration = 0.0f;
+  //   playerMotion->velocity = 0;
+  // }
 
   bool isWalking = false;
 
@@ -83,7 +105,12 @@ void Player::update(double deltaTime) {
     }
   }
 
-  playerSheet->renderFrame(playerX, playerY, frameIndex, 16.0f, 16.0f, playerDirection);
+  const float renderHeight = 22.0f * Player::RENDER_SCALE;
+  const float renderYOffset = renderHeight - Player::HITBOX_HEIGHT;
+
+  playerSheet->renderFrame(playerX, playerY - renderYOffset, frameIndex,
+                           Player::RENDER_SCALE, Player::RENDER_SCALE,
+                           playerDirection);
 }
 
 void Player::handleInput(SDL_Event *event) {
@@ -97,11 +124,11 @@ void Player::handleInput(SDL_Event *event) {
       keyA = isDown;
       break;
     case SDLK_W:
-      if (playerY == initialY && isDown) {
+      if (isGrounded && isDown) {
         playerMotion->velocity = -900.0f;
         playerMotion->acceleration = 1800.0f;
       }
-    break;
+      break;
     }
   }
 }

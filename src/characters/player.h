@@ -5,27 +5,37 @@
 #pragma once
 
 #include "../engine/engine.h"
-#include "../texture/sprite_sheet.h"
+#include "../physics/hitbox.h"
 #include "../physics/motion.h"
+#include "../texture/sprite_sheet.h"
 #include "../time/timer.h"
+#include <vector>
 
 class Player {
 public:
-  Player(Engine *engine, double initialX, double initialY);
+  Player(Engine *engine, double initialX, double initialY,
+         std::vector<std::unique_ptr<Hitbox>>& tileHitboxes);
   ~Player();
   void update(double deltaTime);
   void handleInput(SDL_Event *event);
 
+  static constexpr float RENDER_SCALE = 16.0f;
+  static constexpr float HITBOX_WIDTH = 22.0f * RENDER_SCALE;
+  static constexpr float HITBOX_HEIGHT = 22.0f * RENDER_SCALE;
+
 private:
   double playerX, playerY, initialX, initialY;
   double speed;
+  bool isGrounded = false;
   Engine *engine;
   // The kinematics engine is only used for vertical movement (1D).
   std::unique_ptr<Motion> playerMotion;
   std::unique_ptr<SpriteSheet> playerSheet;
+  std::unique_ptr<Hitbox> playerHitbox;
   std::unique_ptr<Timer> animationTimer;
   bool keyA, keyD;
   SDL_FlipMode playerDirection;
+  std::vector<std::unique_ptr<Hitbox>>& tileHitboxes;
 };
 
 #endif

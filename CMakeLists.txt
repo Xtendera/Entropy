@@ -40,6 +40,7 @@ target_sources(entropy PRIVATE
   src/engine/engine.cpp
   src/emitter/emitter.cpp
   src/physics/motion.cpp
+  src/physics/hitbox.cpp
   src/time/frame_manager.cpp
   src/time/timer.cpp
   src/scene/scene_manager.cpp

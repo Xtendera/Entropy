@@ -17,12 +17,22 @@ SandboxScene::SandboxScene(Engine *engine): engine{engine}, backgroundTexture{nu
   if (!engine->getTextureManager()->getTexture("snow_tile")) {
     engine->getTextureManager()->loadTexture("snow_tile", engine->getBasePath() + "/assets/images/snow_tile_1.png");
   }
+
   snowTile = engine->getTextureManager()->getTexture("snow_tile");
+
+  const float floorY = 2160.0f - (snowTile->getHeight() * 8.0f);
+  tileHitboxes.push_back(std::make_unique<Hitbox>(
+      0.0f, floorY,
+      snowTile->getWidth() * 8.0f * 18.0f,
+      snowTile->getHeight() * 8.0f));
 }
 
 void SandboxScene::onEnter() {
   backgroundTexture = engine->getTextureManager()->getTexture("background");
-  player = std::make_unique<Player>(engine, 90.0f, 1808.0f - snowTile->getHeight() * 8.0f);
+  const float floorY = 2160.0f - (snowTile->getHeight() * 8.0f);
+  player = std::make_unique<Player>(engine, 90.0f,
+                                    floorY - Player::HITBOX_HEIGHT,
+                                    tileHitboxes);
 }
 
 void SandboxScene::onExit() {
