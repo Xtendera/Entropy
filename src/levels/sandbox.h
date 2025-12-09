@@ -5,6 +5,7 @@
 
 #include "../characters/player.h"
 #include "../scene/scene.h"
+#include "../grid/grid.h"
 #include <vector>
 
 struct SnowParticle {
@@ -30,8 +31,7 @@ private:
   Texture *snowTile;
   std::unique_ptr<Player> player;
   std::vector<SnowParticle> snowParticles;
-
-  std::vector<std::unique_ptr<Hitbox>> tileHitboxes;
+  std::unique_ptr<Grid> grid;
 };
 
 #endif

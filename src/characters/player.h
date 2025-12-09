@@ -18,6 +18,7 @@ public:
   ~Player();
   void update(double deltaTime);
   void handleInput(SDL_Event *event);
+  void debugDrawHitboxes();
 
   static constexpr float RENDER_SCALE = 16.0f;
   static constexpr float HITBOX_WIDTH = 22.0f * RENDER_SCALE;
@@ -28,10 +29,15 @@ private:
   double speed;
   bool isGrounded = false;
   Engine *engine;
-  // The kinematics engine is only used for vertical movement (1D).
   std::unique_ptr<Motion> playerMotion;
   std::unique_ptr<SpriteSheet> playerSheet;
-  std::unique_ptr<Hitbox> playerHitbox;
+  
+  std::unique_ptr<Hitbox> bodyHitbox;
+  std::unique_ptr<Hitbox> groundSensor;
+  std::unique_ptr<Hitbox> leftSensor;
+  std::unique_ptr<Hitbox> rightSensor;
+  std::unique_ptr<Hitbox> ceilingSensor;
+  
   std::unique_ptr<Timer> animationTimer;
   bool keyA, keyD;
   SDL_FlipMode playerDirection;

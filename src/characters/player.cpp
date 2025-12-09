@@ -30,9 +30,21 @@ Player::Player(Engine *engine, double initialX, double initialY,
 
   playerSheet = std::make_unique<SpriteSheet>(playerTexture, 22, 22);
 
-  playerHitbox = std::make_unique<Hitbox>(initialX, initialY,
-                                          Player::HITBOX_WIDTH,
-                                          Player::HITBOX_HEIGHT);
+  bodyHitbox = std::make_unique<Hitbox>(initialX + 20, initialY + 10,
+                                        Player::HITBOX_WIDTH - 40,
+                                        Player::HITBOX_HEIGHT - 10);
+  
+  groundSensor = std::make_unique<Hitbox>(initialX + 30, initialY + Player::HITBOX_HEIGHT,
+                                          Player::HITBOX_WIDTH - 60, 5);
+  
+  leftSensor = std::make_unique<Hitbox>(initialX - 5, initialY + 20,
+                                        10, Player::HITBOX_HEIGHT - 40);
+  
+  rightSensor = std::make_unique<Hitbox>(initialX + Player::HITBOX_WIDTH - 5, initialY + 20,
+                                         10, Player::HITBOX_HEIGHT - 40);
+  
+  ceilingSensor = std::make_unique<Hitbox>(initialX + 30, initialY - 5,
+                                           Player::HITBOX_WIDTH - 60, 10);
 
   playerMotion = std::make_unique<Motion>();
   playerMotion->position = initialY;
@@ -49,48 +61,99 @@ void Player::update(double deltaTime) {
   playerMotion->update(deltaTime);
   playerY = playerMotion->position;
 
+  // Set every hitbox/sensor for the player.
+  bodyHitbox->setPosition(playerX + 20, playerY + 10);
+  groundSensor->setPosition(playerX + 30, playerY + Player::HITBOX_HEIGHT);
+  leftSensor->setPosition(playerX - 5, playerY + 20);
+  rightSensor->setPosition(playerX + Player::HITBOX_WIDTH - 5, playerY + 20);
+  ceilingSensor->setPosition(playerX + 30, playerY - 5);
+
   isGrounded = false;
-
-  playerHitbox->setPosition(playerX, playerY);
-
   for (const auto &hitbox : tileHitboxes) {
-    CollisionResult result = playerHitbox->checkCollision(*hitbox);
-    if (result.collided && result.hitTop && playerMotion->velocity >= 0.0f) {
-      // Land on top of the tile
+    if (groundSensor->intersects(*hitbox) && playerMotion->velocity >= 0.0f) {
+      playerY = hitbox->getRect().y - Player::HITBOX_HEIGHT;
+      playerMotion->position = playerY;
       playerMotion->velocity = 0.0f;
       playerMotion->acceleration = 0.0f;
-      playerY = hitbox->getRect().y - playerHitbox->getRect().h;
-      playerMotion->position = playerY;
       isGrounded = true;
+      break;
     }
   }
 
-  // if (playerMotion->position >= initialY && playerMotion->acceleration !=
-  // 0.0f) {
-  //   playerMotion->position = initialY;
-  //   playerMotion->acceleration = 0.0f;
-  //   playerMotion->velocity = 0;
-  // }
+  if (playerMotion->velocity < 0.0f) {
+    ceilingSensor->setPosition(playerX + 30, playerY - 5);
+    for (const auto &hitbox : tileHitboxes) {
+      if (ceilingSensor->intersects(*hitbox)) {
+        playerY = hitbox->getRect().y + hitbox->getRect().h + 5;
+        playerMotion->position = playerY;
+        playerMotion->velocity = 0.0f;
+        break;
+      }
+    }
+  }
+
+  bodyHitbox->setPosition(playerX + 20, playerY + 10);
+  groundSensor->setPosition(playerX + 30, playerY + Player::HITBOX_HEIGHT);
+  leftSensor->setPosition(playerX - 5, playerY + 20);
+  rightSensor->setPosition(playerX + Player::HITBOX_WIDTH - 5, playerY + 20);
+  ceilingSensor->setPosition(playerX + 30, playerY - 5);
 
   bool isWalking = false;
+  double moveX = 0.0;
 
   if (keyD && !keyA) {
     if (playerDirection != SDL_FLIP_NONE) {
       playerDirection = SDL_FLIP_NONE;
     }
-    playerX += speed * deltaTime;
+    moveX = speed * deltaTime;
     isWalking = true;
   } else if (keyA && !keyD) {
     if (playerDirection != SDL_FLIP_HORIZONTAL) {
       playerDirection = SDL_FLIP_HORIZONTAL;
     }
-    playerX -= speed * deltaTime;
+    moveX = -speed * deltaTime;
     isWalking = true;
   }
 
+  if (moveX != 0.0) {
+    double newX = playerX + moveX;
+    
+    if (moveX > 0.0) {
+      rightSensor->setPosition(newX + Player::HITBOX_WIDTH - 5, playerY + 20);
+      bool blocked = false;
+      for (const auto &hitbox : tileHitboxes) {
+        if (rightSensor->intersects(*hitbox)) {
+          blocked = true;
+          break;
+        }
+      }
+      if (!blocked) {
+        playerX = newX;
+      }
+    } else {
+      leftSensor->setPosition(newX - 5, playerY + 20);
+      bool blocked = false;
+      for (const auto &hitbox : tileHitboxes) {
+        if (leftSensor->intersects(*hitbox)) {
+          blocked = true;
+          break;
+        }
+      }
+      if (!blocked) {
+        playerX = newX;
+      }
+    }
+  }
+
+  bodyHitbox->setPosition(playerX + 20, playerY + 10);
+  groundSensor->setPosition(playerX + 30, playerY + Player::HITBOX_HEIGHT);
+  leftSensor->setPosition(playerX - 5, playerY + 20);
+  rightSensor->setPosition(playerX + Player::HITBOX_WIDTH - 5, playerY + 20);
+  ceilingSensor->setPosition(playerX + 30, playerY - 5);
+
   int frameIndex = 0;
 
-  if (isWalking && playerY == initialY) {
+  if (isWalking && isGrounded) {
     if (!animationTimer->isStarted()) {
       animationTimer->start();
     }
@@ -100,7 +163,7 @@ void Player::update(double deltaTime) {
     frameIndex = walkFrame + 1;
   } else {
     animationTimer->stop();
-    if (playerY != initialY) {
+    if (!isGrounded) {
       frameIndex = 4;
     }
   }
@@ -125,10 +188,40 @@ void Player::handleInput(SDL_Event *event) {
       break;
     case SDLK_W:
       if (isGrounded && isDown) {
-        playerMotion->velocity = -900.0f;
+        playerMotion->velocity = -1050.0f;
         playerMotion->acceleration = 1800.0f;
       }
       break;
     }
+  }
+}
+
+void Player::debugDrawHitboxes() {
+  SDL_Renderer *renderer = engine->getRenderer();
+
+  SDL_FRect bodyRect = bodyHitbox->getRect();
+  SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+  SDL_RenderRect(renderer, &bodyRect);
+
+  SDL_FRect groundRect = groundSensor->getRect();
+  SDL_SetRenderDrawColor(renderer, 0, 255, 0, 255);
+  SDL_RenderRect(renderer, &groundRect);
+
+  SDL_FRect leftRect = leftSensor->getRect();
+  SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+  SDL_RenderRect(renderer, &leftRect);
+
+  SDL_FRect rightRect = rightSensor->getRect();
+  SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
+  SDL_RenderRect(renderer, &rightRect);
+
+  SDL_FRect ceilingRect = ceilingSensor->getRect();
+  SDL_SetRenderDrawColor(renderer, 255, 255, 0, 255);
+  SDL_RenderRect(renderer, &ceilingRect);
+
+  SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+  for (const auto &hitbox : tileHitboxes) {
+    SDL_FRect r = hitbox->getRect();
+    SDL_RenderRect(renderer, &r);
   }
 }
