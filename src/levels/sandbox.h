@@ -6,6 +6,7 @@
 #include "../characters/player.h"
 #include "../scene/scene.h"
 #include "../grid/grid.h"
+#include "../ui/button.h"
 #include <vector>
 
 struct SnowParticle {
@@ -29,9 +30,13 @@ private:
   Engine *engine;
   Texture *backgroundTexture;
   Texture *snowTile;
+  Texture *pauseMenuTexture;
   std::unique_ptr<Player> player;
   std::vector<SnowParticle> snowParticles;
   std::unique_ptr<Grid> grid;
+  std::unique_ptr<Button> menuButton;
+  std::unique_ptr<Button> quitButton;
+  bool isPaused = false;
 };
 
 #endif

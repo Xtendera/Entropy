@@ -4,7 +4,7 @@
 #include <memory>
 
 SandboxScene::SandboxScene(Engine *engine)
-    : engine{engine}, backgroundTexture{nullptr}, player{nullptr} {
+    : engine{engine}, backgroundTexture{nullptr}, pauseMenuTexture{nullptr}, player{nullptr} {
   std::srand(std::time(nullptr));
   for (int i = 0; i < 270; i++) {
     SnowParticle particle;
@@ -41,11 +41,22 @@ SandboxScene::SandboxScene(Engine *engine)
 
 void SandboxScene::onEnter() {
   backgroundTexture = engine->getTextureManager()->getTexture("background");
+  
+  if (!engine->getTextureManager()->getTexture("pause_menu")) {
+    engine->getTextureManager()->loadTexture(
+        "pause_menu", engine->getBasePath() + "/assets/images/pause_menu.png");
+  }
+  pauseMenuTexture = engine->getTextureManager()->getTexture("pause_menu");
+  
   const int tileHeight = snowTile->getHeight() * 8;
   const float floorY = 8 * tileHeight;
   player = std::make_unique<Player>(
       engine, 90.0f, floorY - Player::HITBOX_HEIGHT,
       const_cast<std::vector<std::unique_ptr<Hitbox>> &>(grid->getHitboxes()));
+  
+  float centerX = (3840.0f - BUTTON_WIDTH) / 2.0f;
+  menuButton = std::make_unique<Button>(engine, "Menu", centerX, 1080.0f - 100.0f);
+  quitButton = std::make_unique<Button>(engine, "Quit", centerX, 1080.0f + 100.0f);
 }
 
 void SandboxScene::onExit() { player.reset(); }
@@ -81,9 +92,67 @@ void SandboxScene::update(Engine *engine, float deltaTime) {
 
   grid->render(8.0f, 8.0f);
 
-  player->update(deltaTime);
+  if (!isPaused) {
+    player->update(deltaTime);
+  } else {
+    player->update(0.0f);
+  }
+
+  if (isPaused && pauseMenuTexture) {
+    const float scale = 16.0f;
+    float menuWidth = pauseMenuTexture->getWidth() * scale;
+    float menuHeight = pauseMenuTexture->getHeight() * scale;
+    float centerX = (3840.0f - menuWidth) / 2.0f;
+    float centerY = (2160.0f - menuHeight) / 2.0f;
+    pauseMenuTexture->render(centerX, centerY, scale, scale);
+    
+    TTF_Font *font = engine->getGlobalFont();
+    if (font) {
+      SDL_Color white = {255, 255, 255, 255};
+      SDL_Surface *textSurface = TTF_RenderText_Solid(font, "Paused", 0, white);
+      if (textSurface) {
+        SDL_Texture *textTexture = SDL_CreateTextureFromSurface(engine->getRenderer(), textSurface);
+        if (textTexture) {
+          float textX = centerX + (menuWidth - textSurface->w) / 2.0f;
+          float textY = centerY + 100.0f;
+          SDL_FRect textRect = {textX, textY, (float)textSurface->w, (float)textSurface->h};
+          SDL_RenderTexture(engine->getRenderer(), textTexture, nullptr, &textRect);
+          SDL_DestroyTexture(textTexture);
+        }
+        SDL_DestroySurface(textSurface);
+      }
+    }
+    
+    if (menuButton && quitButton) {
+      float centerX = (3840.0f - BUTTON_WIDTH) / 2.0f;
+      menuButton->render(centerX, 980.0f);
+      quitButton->render(centerX, 1230.0f);
+    }
+  }
 
   SDL_RenderPresent(engine->getRenderer());
 }
 
-void SandboxScene::handleInput(SDL_Event *event) { player->handleInput(event); }
+void SandboxScene::handleInput(SDL_Event *event) {
+  if (event->type == SDL_EVENT_KEY_DOWN && event->key.key == SDLK_ESCAPE) {
+    isPaused = !isPaused;
+  }
+  
+  if (isPaused) {
+    if (menuButton) menuButton->handleInput(event);
+    if (quitButton) quitButton->handleInput(event);
+    
+    if (menuButton && menuButton->isClicked()) {
+      engine->getSceneManager()->popScene();
+      isPaused = false;
+      return;
+    }
+    if (quitButton && quitButton->isClicked()) {
+      SDL_Event quitEvent;
+      quitEvent.type = SDL_EVENT_QUIT;
+      SDL_PushEvent(&quitEvent);
+    }
+  } else {
+    player->handleInput(event);
+  }
+}

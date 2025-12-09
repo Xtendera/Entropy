@@ -3,7 +3,8 @@
 #include "SDL3/SDL_events.h"
 
 Button::Button(Engine *engine, std::string btnText, float x, float y)
-    : engine{engine}, btnSheet{nullptr}, hovering{false}, clicked{false}, posX{x}, posY{y} {
+    : engine{engine}, btnSheet{nullptr}, hovering{false}, clicked{false},
+      posX{x}, posY{y} {
   if (!engine->getTextureManager()->getTexture("button")) {
     if (!engine->getTextureManager()->loadTexture(
             "button", engine->getBasePath() + "assets/images/button.png")) {
@@ -26,9 +27,7 @@ Button::Button(Engine *engine, std::string btnText, float x, float y)
   }
 }
 
-void Button::setFontSize(float fontSize) {
-  this->fontSize = fontSize;
-}
+void Button::setFontSize(float fontSize) { this->fontSize = fontSize; }
 
 void Button::handleInput(SDL_Event *event) {
   if (event->type == SDL_EVENT_MOUSE_MOTION) {
@@ -44,12 +43,13 @@ void Button::handleInput(SDL_Event *event) {
       hovering = true;
     } else {
       hovering = false;
+      clicked = false;
     }
   }
-  
+
   if (event->type == SDL_EVENT_MOUSE_BUTTON_UP) {
     clicked = false;
-  } else if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN) {
+  } else if (event->type == SDL_EVENT_MOUSE_BUTTON_DOWN && hovering) {
     clicked = true;
   }
 }
@@ -81,6 +81,4 @@ void Button::render(float x, float y) {
   btnTexture->render(textX, textY);
 }
 
-bool Button::isClicked() {
-  return hovering && clicked;
-}
+bool Button::isClicked() { return hovering && clicked; }

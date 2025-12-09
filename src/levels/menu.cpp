@@ -90,6 +90,7 @@ void MenuScene::update(Engine *engine, float deltaTime) {
 #endif
 
   if (!playBtn->isClicked() && prevPlayBtn) {
+    prevPlayBtn = playBtn->isClicked();
     engine->getSceneManager()->pushScene(
         std::make_unique<SandboxScene>(engine));
     return;
